@@ -1,0 +1,39 @@
+apply plugin: 'com.android.library'
+apply plugin: 'com.novoda.bintray-release'
+android {
+    compileSdkVersion 25
+    buildToolsVersion "25.0.1"
+
+    defaultConfig {
+        minSdkVersion 16
+        targetSdkVersion 25
+        versionCode 100
+        versionName "1.0.0"
+    }
+
+    lintOptions {
+        abortOnError false
+    }
+
+}
+publish {
+    userOrg = 'gengqiquan'//bintray.com用户名
+    groupId = 'com.gengqiquan'//jcenter上的路径
+    artifactId = 'photoalbum'//项目名称
+    publishVersion = '1.0.0'//版本号
+    desc = ''//描述，不重要
+    website = 'https://github.com/gengqiquan/Tangram'
+}
+
+
+dependencies {
+    compile fileTree(include: ['*.jar'], dir: 'libs')
+    compile 'com.android.support:appcompat-v7:25.0.1'
+    compile 'com.android.support:recyclerview-v7:25.0.1'
+    compile 'com.android.support:design:25.0.1'
+    compile 'io.reactivex:rxjava:1.1.9'
+    compile 'io.reactivex:rxandroid:1.2.1'
+    compile 'com.tbruyelle.rxpermissions:rxpermissions:0.9.3@aar'
+    compile 'com.github.bumptech.glide:glide:3.7.0'
+    compile 'com.github.chrisbanes.photoview:library:1.2.4'
+}

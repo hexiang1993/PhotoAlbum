@@ -1,0 +1,88 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="#e5e5e5"
+    android:orientation="vertical">
+
+    <RelativeLayout
+        android:id="@+id/rl_title"
+        android:layout_width="match_parent"
+        android:layout_height="48dp"
+        android:background="#ffffff"
+        android:paddingRight="15dp">
+
+        <ImageView
+            android:id="@+id/view_back"
+            android:layout_width="40dp"
+            android:layout_height="match_parent"
+            android:paddingRight="15dp"
+            android:paddingLeft="15dp"
+            android:layout_centerVertical="true"
+            android:scaleType="fitCenter"
+            android:src="@drawable/icon_arrow2left_black"
+            />
+        <TextView
+            android:id="@+id/tv_count_percent"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:text="1/23"
+            android:gravity="center_vertical"
+            android:layout_toRightOf="@id/view_back"
+            android:textSize="18sp"
+            android:textColor="#333"/>
+
+        <android.support.v7.widget.AppCompatCheckBox
+            android:id="@+id/cb_photo_check"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerVertical="true"
+            android:layout_alignParentRight="true"
+            />
+    </RelativeLayout>
+
+    <com.xhe.photoalbum.widget.FixViewPager
+        android:id="@+id/vp_photo"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        />
+
+    <RelativeLayout
+        android:id="@+id/rl_bottom"
+        android:layout_width="match_parent"
+        android:layout_height="45dp"
+        android:background="#ffffff"
+        android:layout_alignParentBottom="true"
+        >
+
+        <TextView
+            android:id="@+id/tv_checked_count"
+            android:layout_width="20dp"
+            android:layout_height="20dp"
+            android:layout_centerVertical="true"
+            android:layout_toLeftOf="@+id/tv_checked_finish"
+            android:background="@drawable/checked_count_bg"
+            android:gravity="center"
+            android:includeFontPadding="false"
+            android:padding="3dp"
+            android:text="12"
+            android:textColor="#fff"
+            android:textSize="11sp" />
+
+        <TextView
+            android:id="@+id/tv_checked_finish"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:layout_alignParentRight="true"
+            android:layout_centerVertical="true"
+            android:includeFontPadding="false"
+            android:gravity="center_vertical"
+            android:text="完成"
+            android:textColor="#009def"
+            android:textSize="14sp"
+            android:paddingLeft="8dp"
+            android:paddingRight="15dp" />
+    </RelativeLayout>
+
+</LinearLayout>

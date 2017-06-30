@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="tv_finish_enabled">#009def</color>
+    <color name="tv_preview_enabled">#333333</color>
+    <color name="btn_disabled">#55666666</color>
+    <color name="main_color">#009def</color>
+</resources>
