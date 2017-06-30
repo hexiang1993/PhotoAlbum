@@ -111,7 +111,6 @@ public class PopWindowHelp {
     public static PopupWindow initPreviewPop(final Context context, int titleBarColor, int titleTextColor,
                                              final List<PhotoAlbumPicture> listPhotos, final List<PhotoAlbumPicture> listChecked, final int clickIndex,
                                              final OnCheckChangedLisenter lisenter, final View.OnClickListener finishListener) {
-        Log.d("Photopreview", "预览列表：" + listPhotos.toString());
         View view = LayoutInflater.from(context).inflate(R.layout.pop_photo_preview, null);
         final PopupWindow popupWindow = new PopupWindow(view, ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT, true);
         View title = view.findViewById(R.id.rl_title);
@@ -124,11 +123,14 @@ public class PopWindowHelp {
         checkBox.setSupportButtonTintList(SelectorUtils.createColorStateList(Color.parseColor("#e0e0e0"), titleTextColor));
         final TextView tvCount = (TextView) view.findViewById(R.id.tv_checked_count);
         final TextView tvFinish = (TextView) view.findViewById(R.id.tv_checked_finish);
+
+        //修改返回箭头图标的颜色
         ImageView ivBack = (ImageView) view.findViewById(R.id.view_back);
         Drawable drawable = context.getResources().getDrawable(R.drawable.icon_arrow2left_black);
         Drawable wrappedDrawable = DrawableCompat.wrap(drawable);
         DrawableCompat.setTintList(wrappedDrawable, SelectorUtils.createColorStateList(titleTextColor, titleTextColor));
         ivBack.setImageDrawable(wrappedDrawable);
+
         tvCountPercent.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -213,6 +215,14 @@ public class PopWindowHelp {
         }
     }
 
+    /**
+     * 解决7.0手机popupwindow设为view下方时的位置问题
+     *
+     * @param popupWindow
+     * @param view
+     * @param xOff
+     * @param yOff
+     */
     public static void showDropDown(PopupWindow popupWindow, View view, int xOff, int yOff) {
         if (Build.VERSION.SDK_INT != 24) {
             popupWindow.showAsDropDown(view, xOff, yOff);
