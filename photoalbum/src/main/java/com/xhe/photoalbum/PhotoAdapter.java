@@ -38,16 +38,16 @@ public class PhotoAdapter extends RecyclerView.Adapter<PhotoAdapter.ViewHolder> 
     private OnCheckChangedLisenter checkChangedLisenter;
     private OnAdapterViewItemClickLisenter itemClickLisenter;
     private boolean showCamera;
-    private int spanCount;
+    private int limitCount;//限制的最大选择数量
     private Context context;
     private List<PhotoAlbumPicture> listPhotos = new ArrayList<>();
     private int imgSize;//照片尺寸，宽度高度一致
 
-    public PhotoAdapter(Context context, int normalColor, int checkedColor, boolean showCamera, int spanCount) {
-        inflater = LayoutInflater.from(context);
+    public PhotoAdapter(Context context, int normalColor, int checkedColor, boolean showCamera, int spanCount,int limitCount) {
+        this.inflater = LayoutInflater.from(context);
         this.showCamera = showCamera;
         this.context = context;
-        this.spanCount = spanCount;
+        this.limitCount = limitCount;
         this.imgSize = (int) ((DisplayUtils.getScreenWidth(context) - (spanCount - 1) * 0.5) / spanCount);
         this.cbColorStateList = SelectorUtils.createColorStateList(normalColor, checkedColor);
     }
@@ -99,6 +99,10 @@ public class PhotoAdapter extends RecyclerView.Adapter<PhotoAdapter.ViewHolder> 
         /**相册**/
         final int photoIndex = showCamera ? holder.getAdapterPosition() - 1 : holder.getAdapterPosition();
         PhotoAlbumPicture photo = listPhotos.get(photoIndex);
+        //单选的时候选择框隐藏
+        if (limitCount==1){
+            holder.cbChecked.setVisibility(View.INVISIBLE);
+        }
         //选择框的颜色
         holder.cbChecked.setSupportButtonTintList(cbColorStateList);
         ImageLoader.getInstance(context).load(Util.LOCAL_FILE_URI_PREFIX + photo.getPath(), holder.ivPhoto, imgSize, imgSize);

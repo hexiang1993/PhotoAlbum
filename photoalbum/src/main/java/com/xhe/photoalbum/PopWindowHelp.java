@@ -6,6 +6,7 @@ import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.Drawable;
 import android.os.Build;
 import android.os.Handler;
+import android.support.annotation.NonNull;
 import android.support.v4.graphics.drawable.DrawableCompat;
 import android.support.v4.view.ViewPager;
 import android.support.v7.widget.AppCompatCheckBox;
@@ -80,7 +81,9 @@ public class PopWindowHelp {
                         @Override
                         public void run() {
                             popupWindow.dismiss();
-                            itemClickLisenter.itemClick(view, position);
+                            if (itemClickLisenter != null) {
+                                itemClickLisenter.itemClick(view, position);
+                            }
                             isOpen = true;
                         }
                     }, 200);
@@ -108,9 +111,9 @@ public class PopWindowHelp {
      * @param lisenter
      * @return
      */
-    public static PopupWindow initPreviewPop(final Context context, int titleBarColor, int titleTextColor,
+    public static PopupWindow initPreviewPop(final Context context, final int limitCount, int titleBarColor, int titleTextColor,
                                              final List<PhotoAlbumPicture> listPhotos, final List<PhotoAlbumPicture> listChecked, final int clickIndex,
-                                             final OnCheckChangedLisenter lisenter, final View.OnClickListener finishListener) {
+                                             final @NonNull OnCheckChangedLisenter lisenter, final @NonNull View.OnClickListener finishListener) {
         View view = LayoutInflater.from(context).inflate(R.layout.pop_photo_preview, null);
         final PopupWindow popupWindow = new PopupWindow(view, ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT, true);
         View title = view.findViewById(R.id.rl_title);
@@ -123,6 +126,10 @@ public class PopWindowHelp {
         checkBox.setSupportButtonTintList(SelectorUtils.createColorStateList(Color.parseColor("#e0e0e0"), titleTextColor));
         final TextView tvCount = (TextView) view.findViewById(R.id.tv_checked_count);
         final TextView tvFinish = (TextView) view.findViewById(R.id.tv_checked_finish);
+        //单选情况，不需要选择框
+        if (limitCount == 1) {
+            checkBox.setVisibility(View.INVISIBLE);
+        }
 
         //修改返回箭头图标的颜色
         ImageView ivBack = (ImageView) view.findViewById(R.id.view_back);
@@ -143,25 +150,23 @@ public class PopWindowHelp {
                 popupWindow.dismiss();
             }
         });
-        tvFinish.setOnClickListener(new View.OnClickListener() {
+        View.OnClickListener click = new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 popupWindow.dismiss();
-                if (finishListener != null) {
-                    finishListener.onClick(v);
+                if (finishListener == null) return;
+                //单选情况
+                if (limitCount == 1) {
+                    listChecked.add(listPhotos.get(checkedImagePosition));
                 }
+                finishListener.onClick(v);
             }
-        });
-        tvCount.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                popupWindow.dismiss();
-                if (finishListener != null) {
-                    finishListener.onClick(v);
-                }
-            }
-        });
-        setBtnEnabled(context, tvCount, tvFinish, listChecked);
+        };
+        tvFinish.setOnClickListener(click);
+        tvCount.setOnClickListener(click);
+
+        setBtnEnabled(limitCount, context, tvCount, tvFinish, listChecked);
+
         if (listPhotos.size() > 2)
             viewPager.setOffscreenPageLimit(2);
         final PreviewAdapter previewAdapter = new PreviewAdapter(listPhotos);
@@ -186,12 +191,11 @@ public class PopWindowHelp {
         checkBox.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                if (lisenter == null) return;
                 Log.d("Photopreview", "大图预览：onCheckedChanged---" + checkedImagePosition);
-                if (lisenter != null) {
-                    lisenter.onCheckedChanged(buttonView, isChecked, checkedImagePosition);
-                    previewAdapter.notifyDataSetChanged();
-                    setBtnEnabled(context, tvCount, tvFinish, listChecked);
-                }
+                lisenter.onCheckedChanged(buttonView, isChecked, checkedImagePosition);
+                previewAdapter.notifyDataSetChanged();
+                setBtnEnabled(limitCount, context, tvCount, tvFinish, listChecked);
             }
         });
         popupWindow.setAnimationStyle(R.style.NormalDialogAnimation2);
@@ -202,7 +206,14 @@ public class PopWindowHelp {
         return popupWindow;
     }
 
-    private static void setBtnEnabled(Context context, TextView tvCount, TextView tvFinish, List<PhotoAlbumPicture> listChecked) {
+
+    private static void setBtnEnabled(int limitCount, Context context, TextView tvCount, TextView tvFinish, List<PhotoAlbumPicture> listChecked) {
+        if (limitCount == 1) {
+            tvCount.setVisibility(View.INVISIBLE);
+            tvFinish.setClickable(true);
+            tvFinish.setTextColor(context.getResources().getColor(R.color.tv_finish_enabled));
+            return;
+        }
         if (listChecked != null && listChecked.size() > 0) {
             tvCount.setVisibility(View.VISIBLE);
             tvCount.setText(listChecked.size() + "");

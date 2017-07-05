@@ -19,7 +19,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
-import com.tbruyelle.rxpermissions.RxPermissions;
+import com.tbruyelle.rxpermissions2.RxPermissions;
 import com.xhe.photoalbum.data.PhotoAlbumFolder;
 import com.xhe.photoalbum.data.PhotoAlbumPicture;
 import com.xhe.photoalbum.data.PhotoAlbumScaner;
@@ -34,11 +34,14 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Locale;
 
-import rx.Observable;
-import rx.Subscriber;
-import rx.android.schedulers.AndroidSchedulers;
-import rx.functions.Action1;
-import rx.schedulers.Schedulers;
+import io.reactivex.Observable;
+import io.reactivex.ObservableEmitter;
+import io.reactivex.ObservableOnSubscribe;
+import io.reactivex.Observer;
+import io.reactivex.android.schedulers.AndroidSchedulers;
+import io.reactivex.disposables.Disposable;
+import io.reactivex.functions.Consumer;
+import io.reactivex.schedulers.Schedulers;
 
 /**
  * Created by xhe on 2017/6/17.
@@ -51,6 +54,8 @@ public class PhotoAlbumActivity extends AppCompatActivity {
     private TextView tvCheckedCount;
     private TextView tvCheckedFinish;
     private CustomTitlebar titlebar;
+    private View rlBottom;
+
     private PhotoAdapter photoAdapter;
 
     private List<PhotoAlbumFolder> listFolders = new ArrayList<>();//相册列表
@@ -71,6 +76,7 @@ public class PhotoAlbumActivity extends AppCompatActivity {
     private String mCameraFilePath;
     private static final int ACTIVITY_REQUEST_CAMERA = 100;
 
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -84,9 +90,9 @@ public class PhotoAlbumActivity extends AppCompatActivity {
         //先检查权限
         new RxPermissions(this)
                 .request(Manifest.permission.READ_EXTERNAL_STORAGE)
-                .subscribe(new Action1<Boolean>() {
+                .subscribe(new Consumer<Boolean>() {
                     @Override
-                    public void call(Boolean granted) {
+                    public void accept(Boolean granted) throws Exception {
                         if (granted) {
                             loadPhotos(0);
                             return;
@@ -140,6 +146,11 @@ public class PhotoAlbumActivity extends AppCompatActivity {
     }
 
     private void initView() {
+        rlBottom = findViewById(R.id.rl_bottom);
+        //单选隐藏底部栏
+        if (limitCount == 1) {
+            rlBottom.setVisibility(View.GONE);
+        }
         tvPreview = (TextView) findViewById(R.id.tv_preview);
         tvCheckedCount = (TextView) findViewById(R.id.tv_checked_count);
         tvCheckedFinish = (TextView) findViewById(R.id.tv_checked_finish);
@@ -185,15 +196,15 @@ public class PhotoAlbumActivity extends AppCompatActivity {
         recyclerView.setHasFixedSize(true);
         layoutManager = new GridLayoutManager(context, spanCount);
         recyclerView.setLayoutManager(layoutManager);
-        photoAdapter = new PhotoAdapter(context, normalColor, checkedColor, showCamera, spanCount);
+        photoAdapter = new PhotoAdapter(context, normalColor, checkedColor, showCamera, spanCount, limitCount);
         photoAdapter.setCameraClickLisenter(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 new RxPermissions(PhotoAlbumActivity.this)
                         .request(Manifest.permission.CAMERA)
-                        .subscribe(new Action1<Boolean>() {
+                        .subscribe(new Consumer<Boolean>() {
                             @Override
-                            public void call(Boolean granted) {
+                            public void accept(Boolean granted) throws Exception {
                                 if (granted) {
                                     startCamera();
                                     return;
@@ -281,7 +292,7 @@ public class PhotoAlbumActivity extends AppCompatActivity {
         if (previewPop != null) {
             previewPop = null;
         }
-        previewPop = PopWindowHelp.initPreviewPop(context, titleBarColor, titleTextColor, listPhotos, listChecked, position, lisenter, new View.OnClickListener() {
+        previewPop = PopWindowHelp.initPreviewPop(context, limitCount, titleBarColor, titleTextColor, listPhotos, listChecked, position, null, new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 toResult(false);
@@ -295,7 +306,7 @@ public class PhotoAlbumActivity extends AppCompatActivity {
         });
 
         if (!previewPop.isShowing()) {
-            PopWindowHelp.showDropDown(previewPop,findViewById(R.id.view_top),0,0);
+            PopWindowHelp.showDropDown(previewPop, findViewById(R.id.view_top), 0, 0);
         }
     }
 
@@ -383,27 +394,22 @@ public class PhotoAlbumActivity extends AppCompatActivity {
      */
     private void loadPhotos(final int index) {
         Observable
-                .create(new Observable.OnSubscribe<List<PhotoAlbumFolder>>() {
+                .create(new ObservableOnSubscribe<List<PhotoAlbumFolder>>() {
                     @Override
-                    public void call(Subscriber<? super List<PhotoAlbumFolder>> subscriber) {
+                    public void subscribe(ObservableEmitter<List<PhotoAlbumFolder>> e) throws Exception {
                         if (listFolders == null || listFolders.size() <= 0) {
                             listFolders.addAll(PhotoAlbumScaner.getInstance().getPhotoAlbum(context));
                         }
-                        subscriber.onNext(listFolders);
-                        subscriber.onCompleted();
+                        e.onNext(listFolders);
+                        e.onComplete();
                     }
                 })
                 .observeOn(Schedulers.io())
                 .unsubscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(new Subscriber<List<PhotoAlbumFolder>>() {
+                .subscribe(new Observer<List<PhotoAlbumFolder>>() {
                     @Override
-                    public void onCompleted() {
-
-                    }
-
-                    @Override
-                    public void onError(Throwable e) {
+                    public void onSubscribe(Disposable disposable) {
 
                     }
 
@@ -415,6 +421,16 @@ public class PhotoAlbumActivity extends AppCompatActivity {
                         photoAdapter.setList(folder.getPhotos());
                         layoutManager.scrollToPosition(0);
                         Log.d("Photo", folder.getPhotos().toString());
+                    }
+
+                    @Override
+                    public void onError(Throwable e) {
+                        e.printStackTrace();
+                    }
+
+                    @Override
+                    public void onComplete() {
+
                     }
                 });
     }
@@ -463,5 +479,12 @@ public class PhotoAlbumActivity extends AppCompatActivity {
         intent.putStringArrayListExtra(PhotoAlbum.KEY_OUTPUT_IMAGE_PATH_LIST, pathList);
         setResult(RESULT_OK, intent);
         finish();
+    }
+
+    @Override
+    protected void onDestroy() {
+        previewPop = null;
+        folderPop = null;
+        super.onDestroy();
     }
 }
