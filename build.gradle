@@ -26,3 +26,16 @@ allprojects {
 task clean(type: Delete) {
     delete rootProject.buildDir
 }
+
+ext {
+    compileSdk = 25
+    minSdk = 16
+    targetSdk = 25
+    support = "25.3.1"
+    buildTools = "25.0.2"
+    rxjava = "1.1.9"
+    rxandroid = "1.2.1"
+    rxpermissions = "0.9.3@aar"
+    photoview = "1.2.4"
+    glide = "3.7.0"
+}

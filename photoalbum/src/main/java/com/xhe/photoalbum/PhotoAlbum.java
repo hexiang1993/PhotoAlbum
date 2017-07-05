@@ -13,10 +13,7 @@ import com.gengqiquan.result.RxActivityResult;
 import java.util.Collections;
 import java.util.List;
 
-import io.reactivex.Observable;
-import io.reactivex.Observer;
-import io.reactivex.disposables.Disposable;
-import io.reactivex.functions.Consumer;
+import rx.functions.Action1;
 
 
 /**
@@ -217,10 +214,12 @@ public class PhotoAlbum {
             intent.setClass(activity, PhotoAlbumActivity.class);
             RxActivityResult.with(activity)
                     .startActivityWithResult(intent)
-                    .subscribe(new Consumer<Intent>() {
+                    .subscribe(new Action1<Intent>() {
                         @Override
-                        public void accept(Intent intent) throws Exception {
-                            resultCallBack.result(intent);
+                        public void call(Intent intent) {
+                            if (resultCallBack != null) {
+                                resultCallBack.result(intent);
+                            }
                         }
                     });
             return;
@@ -230,10 +229,12 @@ public class PhotoAlbum {
             intent.setClass(fragment.getContext(), PhotoAlbumActivity.class);
             RxActivityResult.with(fragment)
                     .startActivityWithResult(intent)
-                    .subscribe(new Consumer<Intent>() {
+                    .subscribe(new Action1<Intent>() {
                         @Override
-                        public void accept(Intent intent) throws Exception {
-                            resultCallBack.result(intent);
+                        public void call(Intent intent) {
+                            if (resultCallBack != null) {
+                                resultCallBack.result(intent);
+                            }
                         }
                     });
             return;
