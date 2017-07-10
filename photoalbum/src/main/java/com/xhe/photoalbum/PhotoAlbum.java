@@ -1,5 +1,6 @@
 package com.xhe.photoalbum;
 
+import android.app.Activity;
 import android.content.Intent;
 import android.graphics.Color;
 import android.support.annotation.ColorInt;
@@ -70,7 +71,7 @@ public class PhotoAlbum {
     /**
      * 接收文件的activity
      */
-    private AppCompatActivity activity;
+    private Activity activity;
 
     /**
      * 接收文件的fragment
@@ -108,7 +109,7 @@ public class PhotoAlbum {
     private PhotoAlbum() {
     }
 
-    public PhotoAlbum(AppCompatActivity activity) {
+    public PhotoAlbum(Activity activity) {
         this.activity = activity;
     }
 
@@ -171,30 +172,6 @@ public class PhotoAlbum {
         this.spanCount = spanCount;
         return this;
     }
-
-    /**
-     * 最终调用的启动相册
-     */
-//    public void startAlbum() {
-//        Intent intent = new Intent();
-//        intent.putExtra(KEY_ALBUM_TITLEBAR_COLOR, toolbarColor);
-//        intent.putExtra(KEY_ALBUM_TITLE_TEXT_COLOR, titleTxetColor);
-//
-//        intent.putExtra(KEY_ALBUM_MAX_LIMIT_COUNT, limitCount);
-//        intent.putExtra(KEY_ALBUM_SHOW_CAMERA, showCamera);
-//        intent.putExtra(KEY_ALBUM_SPAN_COUNT, spanCount);
-//
-//        if (activity != null) {
-//            intent.setClass(activity, PhotoAlbumActivity.class);
-//            activity.startActivityForResult(intent, requestCode);
-//            return;
-//        }
-//
-//        if (fragment != null) {
-//            intent.setClass(fragment.getContext(), PhotoAlbumActivity.class);
-//            fragment.startActivityForResult(intent, requestCode);
-//        }
-//    }
 
     /**
      * 最终调用的启动相册

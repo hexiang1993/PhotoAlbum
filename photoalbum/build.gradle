@@ -7,8 +7,8 @@ android {
     defaultConfig {
         minSdkVersion 16
         targetSdkVersion 25
-        versionCode 1030
-        versionName "1.0.3"
+        versionCode 1040
+        versionName "1.0.4"
     }
 
     lintOptions {
@@ -20,7 +20,7 @@ publish {
     userOrg = 'gengqiquan'//bintray.com用户名
     groupId = 'com.gengqiquan'//jcenter上的路径
     artifactId = 'photoalbum'//项目名称
-    publishVersion = '1.0.3'//版本号
+    publishVersion = '1.0.4'//版本号
     desc = '系统相册'//描述，不重要
     website = 'https://github.com/hexiang1993/PhotoAlbum'
 }
@@ -36,5 +36,5 @@ dependencies {
     compile 'com.github.chrisbanes.photoview:library:1.2.4'
     compile 'com.tbruyelle.rxpermissions:rxpermissions:0.9.3@aar'
     compile 'com.github.bumptech.glide:glide:3.7.0'
-    compile 'com.gengqiquan:Rx2ActivityResult:0.0.1'
+    compile 'com.gengqiquan:RxActivityResult:0.0.1'
 }

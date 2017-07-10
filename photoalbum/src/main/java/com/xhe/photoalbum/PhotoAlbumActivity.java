@@ -291,7 +291,7 @@ public class PhotoAlbumActivity extends AppCompatActivity {
         if (previewPop != null) {
             previewPop = null;
         }
-        previewPop = PopWindowHelp.initPreviewPop(context, limitCount, titleBarColor, titleTextColor, listPhotos, listChecked, position, null, new View.OnClickListener() {
+        previewPop = PopWindowHelp.initPreviewPop(context, limitCount, titleBarColor, titleTextColor, listPhotos, listChecked, position, lisenter, new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 toResult(false);
