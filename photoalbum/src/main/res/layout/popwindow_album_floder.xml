@@ -37,5 +37,5 @@
         android:id="@+id/rv_content_list"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:background="#e5e5e5" />
+        android:background="#ffffff" />
 </LinearLayout>

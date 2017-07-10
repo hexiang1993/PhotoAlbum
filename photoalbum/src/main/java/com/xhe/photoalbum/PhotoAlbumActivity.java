@@ -4,15 +4,20 @@ import android.Manifest;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Color;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
+import android.support.annotation.ColorInt;
 import android.support.annotation.NonNull;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.Gravity;
 import android.view.View;
+import android.view.Window;
+import android.view.WindowManager;
 import android.widget.CompoundButton;
 import android.widget.PopupWindow;
 import android.widget.TextView;
@@ -23,6 +28,7 @@ import com.tbruyelle.rxpermissions.RxPermissions;
 import com.xhe.photoalbum.data.PhotoAlbumFolder;
 import com.xhe.photoalbum.data.PhotoAlbumPicture;
 import com.xhe.photoalbum.data.PhotoAlbumScaner;
+import com.xhe.photoalbum.data.ThemeData;
 import com.xhe.photoalbum.interfaces.OnAdapterViewItemClickLisenter;
 import com.xhe.photoalbum.interfaces.OnCheckChangedLisenter;
 import com.xhe.photoalbum.utils.Util;
@@ -60,13 +66,8 @@ public class PhotoAlbumActivity extends AppCompatActivity {
     private List<PhotoAlbumFolder> listFolders = new ArrayList<>();//相册列表
     private List<PhotoAlbumPicture> listChecked = new ArrayList<>();//已选中的照片列表
 
-    private int spanCount = 3;//TODO 配置 列数
-    private boolean showCamera = true;//TODO 配置 是否展示相机按钮
+    private boolean showCamera = false;//TODO 配置 是否展示相机按钮
     private int limitCount = 10;//TODO 配置 允许选择的最大数量
-    private int titleBarColor = Color.WHITE;//TODO 配置 标题栏颜色
-    private int titleTextColor = Color.BLACK;//TODO 配置 标题栏文字颜色
-    private int normalColor;//选择框的默认颜色
-    private int checkedColor;//选择框的选中颜色【跟标题栏一致】
     private int currenFolderIndex = 0;//当前照片文件夹的index
     private PopupWindow folderPop;
     private GridLayoutManager layoutManager;
@@ -83,6 +84,7 @@ public class PhotoAlbumActivity extends AppCompatActivity {
         context = this;
         getIntentData();
         initTitlebar();
+        setStatusBarColor(ThemeData.getStatusBarColor());
         initView();
         initRecyclerView();
 
@@ -102,6 +104,22 @@ public class PhotoAlbumActivity extends AppCompatActivity {
     }
 
     /**
+     * 设置状态栏颜色
+     *
+     * @param color
+     */
+    private void setStatusBarColor(@ColorInt int color) {
+        if (Build.VERSION.SDK_INT >= 21) {
+            final Window window = getWindow();
+            if (window != null) {
+                window.addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS);
+                window.setStatusBarColor(color);
+                window.setNavigationBarColor(ContextCompat.getColor(this, R.color.albumPrimaryBlack));
+            }
+        }
+    }
+
+    /**
      * 处理intent数据
      */
     private void getIntentData() {
@@ -109,26 +127,20 @@ public class PhotoAlbumActivity extends AppCompatActivity {
         if (intent == null) {
             return;
         }
-        spanCount = intent.getIntExtra(PhotoAlbum.KEY_ALBUM_SPAN_COUNT, 3);
         limitCount = intent.getIntExtra(PhotoAlbum.KEY_ALBUM_MAX_LIMIT_COUNT, 1);
         showCamera = intent.getBooleanExtra(PhotoAlbum.KEY_ALBUM_SHOW_CAMERA, false);
-        titleBarColor = intent.getIntExtra(PhotoAlbum.KEY_ALBUM_TITLEBAR_COLOR, Color.WHITE);
-        titleTextColor = intent.getIntExtra(PhotoAlbum.KEY_ALBUM_TITLE_TEXT_COLOR, Color.parseColor("#333333"));
-        normalColor = Color.parseColor("#e0e0e0");
-        checkedColor = titleBarColor;
-
     }
 
     private void initTitlebar() {
         titlebar = (CustomTitlebar) findViewById(R.id.title_bar);
-        titlebar.setBackgroundColor(titleBarColor);
+        titlebar.setBackgroundColor(ThemeData.getTitleBarColor());
         titlebar.setCenterText("所有照片")
-                .setCenterColor(titleTextColor)
+                .setCenterColor(ThemeData.getTitleTextColor())
                 .setLeftText("相册")
-                .setLeftColor(titleTextColor)
-                .setLeftImage(R.drawable.icon_arrow2left_black, titleTextColor)
+                .setLeftColor(ThemeData.getTitleTextColor())
+                .setLeftImage(R.drawable.icon_arrow2left_black, ThemeData.getTitleTextColor())
                 .setRightText("取消")
-                .setRightColor(titleTextColor)
+                .setRightColor(ThemeData.getTitleTextColor())
                 .setLeftClickLisenter(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
@@ -191,11 +203,12 @@ public class PhotoAlbumActivity extends AppCompatActivity {
 
     private void initRecyclerView() {
         recyclerView = (RecyclerView) findViewById(R.id.recycle_view);
+        recyclerView.setBackgroundColor(ThemeData.getBackgroundColor());
         //如果确定每个item的内容不会改变RecyclerView的大小，设置这个选项可以提高性能
         recyclerView.setHasFixedSize(true);
-        layoutManager = new GridLayoutManager(context, spanCount);
+        layoutManager = new GridLayoutManager(context, ThemeData.getSpanCount());
         recyclerView.setLayoutManager(layoutManager);
-        photoAdapter = new PhotoAdapter(context, normalColor, checkedColor, showCamera, spanCount, limitCount);
+        photoAdapter = new PhotoAdapter(context, showCamera, limitCount);
         photoAdapter.setCameraClickLisenter(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -291,7 +304,7 @@ public class PhotoAlbumActivity extends AppCompatActivity {
         if (previewPop != null) {
             previewPop = null;
         }
-        previewPop = PopWindowHelp.initPreviewPop(context, limitCount, titleBarColor, titleTextColor, listPhotos, listChecked, position, lisenter, new View.OnClickListener() {
+        previewPop = PopWindowHelp.initPreviewPop(context, limitCount, ThemeData.getTitleBarColor(), ThemeData.getTitleTextColor(), listPhotos, listChecked, position, lisenter, new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 toResult(false);
@@ -314,7 +327,7 @@ public class PhotoAlbumActivity extends AppCompatActivity {
      */
     private void showAlbumFolder() {
         if (folderPop == null) {
-            folderPop = PopWindowHelp.initFolerPop(context, titleBarColor, titleTextColor, listFolders,
+            folderPop = PopWindowHelp.initFolerPop(context, ThemeData.getTitleBarColor(), ThemeData.getTitleTextColor(), listFolders,
                     new OnAdapterViewItemClickLisenter() {
                         @Override
                         public void itemClick(View view, int position) {

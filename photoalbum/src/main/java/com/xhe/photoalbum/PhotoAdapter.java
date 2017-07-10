@@ -13,6 +13,7 @@ import android.widget.CompoundButton;
 import android.widget.ImageView;
 
 import com.xhe.photoalbum.data.PhotoAlbumPicture;
+import com.xhe.photoalbum.data.ThemeData;
 import com.xhe.photoalbum.interfaces.OnAdapterViewItemClickLisenter;
 import com.xhe.photoalbum.interfaces.OnCheckChangedLisenter;
 import com.xhe.photoalbum.utils.DisplayUtils;
@@ -32,7 +33,6 @@ public class PhotoAdapter extends RecyclerView.Adapter<PhotoAdapter.ViewHolder> 
     public static final int TYPE_CAMERA = 1;
     public static final int TYPE_PICTURE = 2;
     private final LayoutInflater inflater;
-    private final ColorStateList cbColorStateList;
 
     private View.OnClickListener cameraClickLisenter;
     private OnCheckChangedLisenter checkChangedLisenter;
@@ -43,13 +43,12 @@ public class PhotoAdapter extends RecyclerView.Adapter<PhotoAdapter.ViewHolder> 
     private List<PhotoAlbumPicture> listPhotos = new ArrayList<>();
     private int imgSize;//照片尺寸，宽度高度一致
 
-    public PhotoAdapter(Context context, int normalColor, int checkedColor, boolean showCamera, int spanCount,int limitCount) {
+    public PhotoAdapter(Context context, boolean showCamera,int limitCount) {
         this.inflater = LayoutInflater.from(context);
         this.showCamera = showCamera;
         this.context = context;
         this.limitCount = limitCount;
-        this.imgSize = (int) ((DisplayUtils.getScreenWidth(context) - (spanCount - 1) * 0.5) / spanCount);
-        this.cbColorStateList = SelectorUtils.createColorStateList(normalColor, checkedColor);
+        this.imgSize = (int) ((DisplayUtils.getScreenWidth(context) - (ThemeData.getSpanCount() - 1) * 0.5) / ThemeData.getSpanCount());
     }
 
     public void setList(@NonNull List<PhotoAlbumPicture> list) {
@@ -103,8 +102,8 @@ public class PhotoAdapter extends RecyclerView.Adapter<PhotoAdapter.ViewHolder> 
         if (limitCount==1){
             holder.cbChecked.setVisibility(View.INVISIBLE);
         }
-        //选择框的颜色
-        holder.cbChecked.setSupportButtonTintList(cbColorStateList);
+        //选择框的样式
+        holder.cbChecked.setButtonDrawable(ThemeData.getCheckBoxDrawable());
         ImageLoader.getInstance(context).load(Util.LOCAL_FILE_URI_PREFIX + photo.getPath(), holder.ivPhoto, imgSize, imgSize);
         holder.cbChecked.setChecked(photo.isChecked());
         Log.w("Photo", "onBindViewHolder-------" + position+"是否选中"+photo.isChecked());

@@ -1,6 +1,7 @@
 package com.hexiang.photoalbumdemo;
 
 import android.content.Intent;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
@@ -12,10 +13,13 @@ import com.gengqiquan.adapter.adapter.SBAdapter;
 import com.gengqiquan.adapter.interfaces.Converter;
 import com.gengqiquan.adapter.interfaces.Holder;
 import com.xhe.photoalbum.PhotoAlbum;
+import com.xhe.photoalbum.data.ThemeData;
 import com.xhe.photoalbum.utils.ImageLoader;
 
 import java.util.ArrayList;
 import java.util.List;
+
+import rx.functions.Action1;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -26,22 +30,27 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        ThemeData.init(new ThemeData.ThemeBuilder()
+                .spanCount(3)
+                .titleBarColor(Color.parseColor("#009def"))
+                .titleTextColor(Color.WHITE)
+                .backgroundColor(Color.WHITE)
+                .build());
 
         findViewById(R.id.tv_start_album).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-//                new PhotoAlbum(MainActivity.this, 100)
-//                        .setLimitCount(5)
-//                        .startAlbum();
                 new PhotoAlbum(MainActivity.this)
                         .setLimitCount(5)
-                        .startAlbum(new PhotoAlbum.ActivityForResultCallBack() {
+                        .startAlbum()
+                        .subscribe(new Action1<Intent>() {
                             @Override
-                            public void result(Intent data) {
-                                if (data == null) return;
+                            public void call(Intent intent) {
+                                if (intent == null) {
+                                    return;
+                                }
                                 list.clear();
-                                list.addAll(PhotoAlbum.parseResult(data));
-                                adapter.notifyDataChanged();
+                                list.addAll(PhotoAlbum.parseResult(intent));
                             }
                         });
 

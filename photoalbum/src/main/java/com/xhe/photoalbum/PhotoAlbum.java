@@ -1,19 +1,23 @@
 package com.xhe.photoalbum;
 
 import android.app.Activity;
+import android.content.Context;
 import android.content.Intent;
 import android.graphics.Color;
 import android.support.annotation.ColorInt;
+import android.support.annotation.DrawableRes;
 import android.support.annotation.IntRange;
 import android.support.annotation.NonNull;
 import android.support.v4.app.Fragment;
 import android.support.v7.app.AppCompatActivity;
 
 import com.gengqiquan.result.RxActivityResult;
+import com.xhe.photoalbum.data.ThemeData;
 
 import java.util.Collections;
 import java.util.List;
 
+import rx.Observable;
 import rx.functions.Action1;
 
 
@@ -25,10 +29,7 @@ import rx.functions.Action1;
 public class PhotoAlbum {
     public static final String KEY_OUTPUT_IMAGE_PATH_LIST = "KEY_OUTPUT_IMAGE_PATH_LIST";//选择的照片路径列表
 
-    public static final String KEY_ALBUM_SPAN_COUNT = "KEY_ALBUM_SPAN_COUNT";//相册显示的列数
     public static final String KEY_ALBUM_MAX_LIMIT_COUNT = "KEY_ALBUM_MAX_LIMIT_COUNT";//允许选择的最大数量
-    public static final String KEY_ALBUM_TITLEBAR_COLOR = "KEY_ALBUM_TITLEBAR_COLOR";//相册显示的titlebar的颜色
-    public static final String KEY_ALBUM_TITLE_TEXT_COLOR = "KEY_ALBUM_TITLE_TEXT_COLOR";//相册显示的titlebar上文字的颜色
     public static final String KEY_ALBUM_SHOW_CAMERA = "KEY_ALBUM_SHOW_CAMERA";//是否需要展示相机
 
     /**
@@ -45,38 +46,8 @@ public class PhotoAlbum {
         return pathList;
     }
 
-    /**
-     * 整体设置相册的默认值
-     * 需要在Application中调用
-     *
-     * @param barColr   默认标题栏颜色，传null为不设置
-     * @param textColor 默认标题栏文字颜色，传null为不设置
-     * @param count     默认相册展示列数，只能为大于1的整数
-     */
-    public static void init(@ColorInt Integer barColr, @ColorInt Integer textColor, @IntRange(from = 1) Integer count) {
-        //默认标题栏颜色值
-        //默认标题栏文字颜色值
-        //默认相册列数
-        if (barColr != null) {
-            toolbarColor = barColr;
-        }
-        if (textColor != null) {
-            titleTxetColor = textColor;
-        }
 
-        spanCount = count;
-    }
-
-
-    /**
-     * 接收文件的activity
-     */
-    private Activity activity;
-
-    /**
-     * 接收文件的fragment
-     */
-    private Fragment fragment;
+    private Context context;
 
     /**
      * 最多能选择的图片数量
@@ -87,12 +58,27 @@ public class PhotoAlbum {
     /**
      * toolbar的颜色
      */
-    private static int toolbarColor = Color.WHITE;
+    @ColorInt
+    private int toolbarColor = ThemeData.getTitleBarColor();
 
     /**
-     * 状态栏的颜色
+     * 标题栏文字的颜色
      */
-    private static int titleTxetColor = Color.parseColor("#333333");
+    @ColorInt
+    private int titleTxetColor = ThemeData.getTitleTextColor();
+
+    /**
+     * 选择框的style drawable
+     */
+    @DrawableRes
+    public int checkBoxDrawable = ThemeData.getCheckBoxDrawable();
+    /**
+     * 状态栏颜色
+     */
+    private int statusBarColor = ThemeData.getStatusBarColor();
+
+    private int backgroundColor = ThemeData.getBackgroundColor();
+
     /**
      * 是否展示相机按钮
      * 默认不展示
@@ -102,20 +88,20 @@ public class PhotoAlbum {
     /**
      * 相册展示的列数
      */
-    private static int spanCount = 3;
-
-    private static PhotoAlbum photoAlbum;
+    private int spanCount = ThemeData.getSpanCount();
 
     private PhotoAlbum() {
     }
 
-    public PhotoAlbum(Activity activity) {
-        this.activity = activity;
+    /**
+     * context必须是activity或fragment的
+     *
+     * @param context
+     */
+    public PhotoAlbum(Context context) {
+        this.context = context;
     }
 
-    public PhotoAlbum(Fragment fragment) {
-        this.fragment = fragment;
-    }
 
     /**
      * 设置限制的最大选择数量
@@ -150,6 +136,11 @@ public class PhotoAlbum {
         return this;
     }
 
+    public PhotoAlbum setBackgroundColor(int backgroundColor) {
+        this.backgroundColor = backgroundColor;
+        return this;
+    }
+
     /**
      * 设置是否需要显示相机
      * 默认不显示
@@ -175,49 +166,27 @@ public class PhotoAlbum {
 
     /**
      * 最终调用的启动相册
-     *
-     * @param resultCallBack 回调中处理activityForResult的结果
      */
-    public void startAlbum(@NonNull final ActivityForResultCallBack resultCallBack) {
-        Intent intent = new Intent();
-        intent.putExtra(KEY_ALBUM_TITLEBAR_COLOR, toolbarColor);
-        intent.putExtra(KEY_ALBUM_TITLE_TEXT_COLOR, titleTxetColor);
+    public Observable<Intent> startAlbum() {
+        ThemeData.init(new ThemeData.ThemeBuilder()
+                .backgroundColor(backgroundColor)
+                .titleBarColor(toolbarColor)
+                .titleTextColor(titleTxetColor)
+                .statusBarColor(statusBarColor)
+                .checkBoxDrawable(checkBoxDrawable)
+                .spanCount(spanCount)
+                .build());
 
+        Intent intent = new Intent();
         intent.putExtra(KEY_ALBUM_MAX_LIMIT_COUNT, limitCount);
         intent.putExtra(KEY_ALBUM_SHOW_CAMERA, showCamera);
-        intent.putExtra(KEY_ALBUM_SPAN_COUNT, spanCount);
 
-        if (activity != null) {
-            intent.setClass(activity, PhotoAlbumActivity.class);
-            RxActivityResult.with(activity)
-                    .startActivityWithResult(intent)
-                    .subscribe(new Action1<Intent>() {
-                        @Override
-                        public void call(Intent intent) {
-                            if (resultCallBack != null) {
-                                resultCallBack.result(intent);
-                            }
-                        }
-                    });
-            return;
-        }
+        if (context == null)
+            throw new NullPointerException("context must be not null");
 
-        if (fragment != null) {
-            intent.setClass(fragment.getContext(), PhotoAlbumActivity.class);
-            RxActivityResult.with(fragment)
-                    .startActivityWithResult(intent)
-                    .subscribe(new Action1<Intent>() {
-                        @Override
-                        public void call(Intent intent) {
-                            if (resultCallBack != null) {
-                                resultCallBack.result(intent);
-                            }
-                        }
-                    });
-            return;
-        }
-
-        throw new NullPointerException("Activity or Fragment not null");
+        intent.setClass(context, PhotoAlbumActivity.class);
+        return RxActivityResult.with(context)
+                .startActivityWithResult(intent);
     }
 
     public interface ActivityForResultCallBack {

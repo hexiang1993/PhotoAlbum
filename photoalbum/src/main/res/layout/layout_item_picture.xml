@@ -17,5 +17,9 @@
         android:layout_height="wrap_content"
         android:layout_alignRight="@+id/iv_photo"
         android:layout_alignTop="@+id/iv_photo"
+        android:layout_margin="5dp"
+        android:button="@drawable/checkbox_style"
+        android:scaleX="0.8"
+        android:scaleY="0.8"
         />
 </RelativeLayout>

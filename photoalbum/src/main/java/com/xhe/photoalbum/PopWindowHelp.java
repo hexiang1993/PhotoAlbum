@@ -24,6 +24,7 @@ import android.widget.TextView;
 
 import com.xhe.photoalbum.data.PhotoAlbumFolder;
 import com.xhe.photoalbum.data.PhotoAlbumPicture;
+import com.xhe.photoalbum.data.ThemeData;
 import com.xhe.photoalbum.interfaces.OnAdapterViewItemClickLisenter;
 import com.xhe.photoalbum.interfaces.OnCheckChangedLisenter;
 import com.xhe.photoalbum.utils.SelectorUtils;
@@ -53,6 +54,7 @@ public class PopWindowHelp {
     public static PopupWindow initFolerPop(Context context, int titleBarColor, int titleTextColor, List<PhotoAlbumFolder> listFolder,
                                            final OnAdapterViewItemClickLisenter itemClickLisenter) {
         View view = LayoutInflater.from(context).inflate(R.layout.popwindow_album_floder, null);
+        view.setBackgroundColor(ThemeData.getBackgroundColor());
         final PopupWindow popupWindow = new PopupWindow(view, ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT, true);
         view.findViewById(R.id.rl_title).setBackgroundColor(titleBarColor);
         TextView tvTitle = (TextView) view.findViewById(R.id.tv_title);
@@ -115,6 +117,7 @@ public class PopWindowHelp {
                                              final List<PhotoAlbumPicture> listPhotos, final List<PhotoAlbumPicture> listChecked, final int clickIndex,
                                              final @NonNull OnCheckChangedLisenter lisenter, final @NonNull View.OnClickListener finishListener) {
         View view = LayoutInflater.from(context).inflate(R.layout.pop_photo_preview, null);
+        view.setBackgroundColor(ThemeData.getBackgroundColor());
         final PopupWindow popupWindow = new PopupWindow(view, ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT, true);
         View title = view.findViewById(R.id.rl_title);
         title.setBackgroundColor(titleBarColor);
@@ -123,7 +126,8 @@ public class PopWindowHelp {
         tvCountPercent.setText((clickIndex + 1) + "/" + listPhotos.size());
         FixViewPager viewPager = (FixViewPager) view.findViewById(R.id.vp_photo);
         final AppCompatCheckBox checkBox = (AppCompatCheckBox) view.findViewById(R.id.cb_photo_check);
-        checkBox.setSupportButtonTintList(SelectorUtils.createColorStateList(Color.parseColor("#e0e0e0"), titleTextColor));
+//        checkBox.setSupportButtonTintList(SelectorUtils.createColorStateList(Color.parseColor("#e0e0e0"), titleTextColor));
+        checkBox.setButtonDrawable(ThemeData.getCheckBoxDrawable());
         final TextView tvCount = (TextView) view.findViewById(R.id.tv_checked_count);
         final TextView tvFinish = (TextView) view.findViewById(R.id.tv_checked_finish);
         //单选情况，不需要选择框
