@@ -41,6 +41,7 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 new PhotoAlbum(MainActivity.this)
+                        .setRemovePaths(list)
                         .setLimitCount(5)
                         .startAlbum()
                         .subscribe(new Action1<Intent>() {
@@ -51,6 +52,8 @@ public class MainActivity extends AppCompatActivity {
                                 }
                                 list.clear();
                                 list.addAll(PhotoAlbum.parseResult(intent));
+                                adapter.notifyDataChanged();
+                                Log.d("PhotoAlbum",list.toString());
                             }
                         });
 

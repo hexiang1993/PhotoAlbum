@@ -3,6 +3,7 @@ package com.xhe.photoalbum.data;
 import android.content.Context;
 import android.database.Cursor;
 import android.provider.MediaStore;
+import android.util.Log;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -34,7 +35,7 @@ public class PhotoAlbumScaner {
     /**
      * 获取文件夹列表及其相应照片列表
      */
-    public List<PhotoAlbumFolder> getPhotoAlbum(Context context) {
+    public List<PhotoAlbumFolder> getPhotoAlbum(Context context, List<String> removePaths) {
         Cursor cursor = MediaStore.Images.Media.query(context.getContentResolver(), MediaStore.Images.Media.EXTERNAL_CONTENT_URI, STORE_IMAGES);
         Map<String, PhotoAlbumFolder> albumFolderMap = new HashMap<>();
 
@@ -49,6 +50,12 @@ public class PhotoAlbumScaner {
             if (imagePath == null || imagePath.endsWith(".mp4") || imagePath.endsWith(".gif")) {
                 continue;
             }
+            Log.d("PhotoAlbum", "照片路径：" + imagePath);
+            //不添加需要移除的照片路径的照片
+            if (removePaths != null && removePaths.contains(imagePath)) {
+                continue;
+            }
+
             String imageName = cursor.getString(cursor.getColumnIndex(MediaStore.Images.Media.DISPLAY_NAME));
             long addTime = cursor.getLong(cursor.getColumnIndex(MediaStore.Images.Media.DATE_ADDED));
 

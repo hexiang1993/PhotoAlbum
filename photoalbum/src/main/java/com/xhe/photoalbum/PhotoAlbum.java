@@ -14,6 +14,7 @@ import android.support.v7.app.AppCompatActivity;
 import com.gengqiquan.result.RxActivityResult;
 import com.xhe.photoalbum.data.ThemeData;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
@@ -31,6 +32,7 @@ public class PhotoAlbum {
 
     public static final String KEY_ALBUM_MAX_LIMIT_COUNT = "KEY_ALBUM_MAX_LIMIT_COUNT";//允许选择的最大数量
     public static final String KEY_ALBUM_SHOW_CAMERA = "KEY_ALBUM_SHOW_CAMERA";//是否需要展示相机
+    public static final String KEY_ALBUM_REMOVE_PATHS = "KEY_ALBUM_REMOVE_PATHS";//需要在相册中移除的照片路径
 
     /**
      * 解析接受到的结果，开发者需要判断{@code resultCode = Activity.RESULT_OK}.
@@ -48,6 +50,11 @@ public class PhotoAlbum {
 
 
     private Context context;
+
+    /**
+     * 不需要在相册显示的照片路径
+     */
+    private ArrayList<String> listRemovePath;
 
     /**
      * 最多能选择的图片数量
@@ -89,6 +96,7 @@ public class PhotoAlbum {
      * 相册展示的列数
      */
     private int spanCount = ThemeData.getSpanCount();
+
 
     private PhotoAlbum() {
     }
@@ -165,6 +173,21 @@ public class PhotoAlbum {
     }
 
     /**
+     * 设置需要排除的照片路径
+     * 一般用在控制不选择重复照片
+     * @param listRemovePath
+     * @return
+     */
+    public PhotoAlbum setRemovePaths(List<String> listRemovePath) {
+        if (listRemovePath == null) {
+            return this;
+        }
+        this.listRemovePath = new ArrayList<>();
+        this.listRemovePath.addAll(listRemovePath);
+        return this;
+    }
+
+    /**
      * 最终调用的启动相册
      */
     public Observable<Intent> startAlbum() {
@@ -180,6 +203,7 @@ public class PhotoAlbum {
         Intent intent = new Intent();
         intent.putExtra(KEY_ALBUM_MAX_LIMIT_COUNT, limitCount);
         intent.putExtra(KEY_ALBUM_SHOW_CAMERA, showCamera);
+        intent.putStringArrayListExtra(KEY_ALBUM_REMOVE_PATHS, listRemovePath);
 
         if (context == null)
             throw new NullPointerException("context must be not null");

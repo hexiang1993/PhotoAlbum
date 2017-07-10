@@ -410,7 +410,7 @@ public class PhotoAlbumActivity extends AppCompatActivity {
                     @Override
                     public void call(Subscriber<? super List<PhotoAlbumFolder>> subscriber) {
                         if (listFolders == null || listFolders.size() <= 0) {
-                            listFolders.addAll(PhotoAlbumScaner.getInstance().getPhotoAlbum(context));
+                            listFolders.addAll(PhotoAlbumScaner.getInstance().getPhotoAlbum(context,getIntent().getStringArrayListExtra(PhotoAlbum.KEY_ALBUM_REMOVE_PATHS)));
                         }
                         subscriber.onNext(listFolders);
                         subscriber.onCompleted();
