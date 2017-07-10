@@ -50,7 +50,6 @@ public class PhotoAlbumScaner {
             if (imagePath == null || imagePath.endsWith(".mp4") || imagePath.endsWith(".gif")) {
                 continue;
             }
-            Log.d("PhotoAlbum", "照片路径：" + imagePath);
             //不添加需要移除的照片路径的照片
             if (removePaths != null && removePaths.contains(imagePath)) {
                 continue;

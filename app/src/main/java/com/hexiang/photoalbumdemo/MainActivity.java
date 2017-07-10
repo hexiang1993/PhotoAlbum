@@ -1,6 +1,5 @@
 package com.hexiang.photoalbumdemo;
 
-import android.content.Intent;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
@@ -19,6 +18,7 @@ import com.xhe.photoalbum.utils.ImageLoader;
 import java.util.ArrayList;
 import java.util.List;
 
+import rx.Subscriber;
 import rx.functions.Action1;
 
 public class MainActivity extends AppCompatActivity {
@@ -43,17 +43,24 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 new PhotoAlbum(MainActivity.this)
-                        .setRemovePaths(list)
-                        .setLimitCount(5)
+                        .addRemovePaths(list)
+                        .setLimitCount(3)
                         .startAlbum()
-                        .subscribe(new Action1<Intent>() {
+                        .subscribe(new Subscriber<List<String>>() {
                             @Override
-                            public void call(Intent intent) {
-                                if (intent == null) {
-                                    return;
-                                }
+                            public void onCompleted() {
+
+                            }
+
+                            @Override
+                            public void onError(Throwable throwable) {
+                                throwable.printStackTrace();
+                            }
+
+                            @Override
+                            public void onNext(List<String> paths) {
                                 list.clear();
-                                list.addAll(PhotoAlbum.parseResult(intent));
+                                list.addAll(paths);
                                 adapter.notifyDataChanged();
                                 Log.d("PhotoAlbum",list.toString());
                             }

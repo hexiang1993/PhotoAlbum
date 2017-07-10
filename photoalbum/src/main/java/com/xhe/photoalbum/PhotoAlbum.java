@@ -1,15 +1,12 @@
 package com.xhe.photoalbum;
 
-import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
-import android.graphics.Color;
 import android.support.annotation.ColorInt;
 import android.support.annotation.DrawableRes;
-import android.support.annotation.IntRange;
 import android.support.annotation.NonNull;
-import android.support.v4.app.Fragment;
-import android.support.v7.app.AppCompatActivity;
+import android.text.TextUtils;
+import android.util.Log;
 
 import com.gengqiquan.result.RxActivityResult;
 import com.xhe.photoalbum.data.ThemeData;
@@ -19,7 +16,7 @@ import java.util.Collections;
 import java.util.List;
 
 import rx.Observable;
-import rx.functions.Action1;
+import rx.functions.Func1;
 
 
 /**
@@ -54,7 +51,7 @@ public class PhotoAlbum {
     /**
      * 不需要在相册显示的照片路径
      */
-    private ArrayList<String> listRemovePath;
+    private ArrayList<String> listRemovePath = new ArrayList<>();
 
     /**
      * 最多能选择的图片数量
@@ -175,22 +172,29 @@ public class PhotoAlbum {
     /**
      * 设置需要排除的照片路径
      * 一般用在控制不选择重复照片
-     * @param listRemovePath
+     *
      * @return
      */
-    public PhotoAlbum setRemovePaths(List<String> listRemovePath) {
-        if (listRemovePath == null) {
+    public PhotoAlbum addRemovePath(@NonNull String path) {
+        if (path == null || TextUtils.isEmpty(path.trim())) {
             return this;
         }
-        this.listRemovePath = new ArrayList<>();
-        this.listRemovePath.addAll(listRemovePath);
+        this.listRemovePath.add(path);
+        return this;
+    }
+
+    public PhotoAlbum addRemovePaths(@NonNull List<String> paths) {
+        if (paths == null) {
+            return this;
+        }
+        this.listRemovePath.addAll(paths);
         return this;
     }
 
     /**
      * 最终调用的启动相册
      */
-    public Observable<Intent> startAlbum() {
+    public Observable<List<String>> startAlbum() {
         ThemeData.init(new ThemeData.ThemeBuilder()
                 .backgroundColor(backgroundColor)
                 .titleBarColor(toolbarColor)
@@ -210,10 +214,12 @@ public class PhotoAlbum {
 
         intent.setClass(context, PhotoAlbumActivity.class);
         return RxActivityResult.with(context)
-                .startActivityWithResult(intent);
-    }
-
-    public interface ActivityForResultCallBack {
-        void result(Intent data);
+                .startActivityWithResult(intent)
+                .map(new Func1<Intent, List<String>>() {
+                    @Override
+                    public List<String> call(Intent intent) {
+                        return parseResult(intent);
+                    }
+                });
     }
 }
