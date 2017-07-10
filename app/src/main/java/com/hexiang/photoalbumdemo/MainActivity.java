@@ -35,6 +35,8 @@ public class MainActivity extends AppCompatActivity {
                 .titleBarColor(Color.parseColor("#009def"))
                 .titleTextColor(Color.WHITE)
                 .backgroundColor(Color.WHITE)
+                .checkBoxDrawable(R.drawable.checkbox_style)
+                .statusBarColor(getResources().getColor(R.color.main_color))
                 .build());
 
         findViewById(R.id.tv_start_album).setOnClickListener(new View.OnClickListener() {
