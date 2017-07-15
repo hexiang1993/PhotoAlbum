@@ -1,30 +1,31 @@
 # PhotoAlbum
 系统相册
 
-//配置相册的主题
+##config the theme
+```
 ThemeData.init(new ThemeData.ThemeBuilder()
-                .spanCount(3)
-                .titleBarColor(Color.parseColor("#009def"))
-                .titleTextColor(Color.WHITE)
-                .backgroundColor(Color.WHITE)
-                .checkBoxDrawable(R.drawable.checkbox_style)
-                .statusBarColor(getResources().getColor(R.color.main_color))
-                .build());
+         .spanCount(3)
+         .titleBarColor(Color.parseColor("#009def"))
+         .titleTextColor(Color.WHITE)
+         .backgroundColor(Color.WHITE)
+         .checkBoxDrawable(R.drawable.checkbox_style)
+         .statusBarColor(getResources().getColor(R.color.main_color))
+         .build());
+```
 
-//启动相册
+##start album
+```
 new PhotoAlbum(MainActivity.this)
-                        .setRemovePaths(list)
-                        .setLimitCount(5)
+                        .addRemovePaths(list)
+                        .setLimitCount(3)
                         .startAlbum()
-                        .subscribe(new Action1<Intent>() {
+                        .subscribe(new Action1<List<String>>() {
                             @Override
-                            public void call(Intent intent) {
-                                if (intent == null) {
-                                    return;
-                                }
+                            public void call(List<String> paths) {
                                 list.clear();
-                                list.addAll(PhotoAlbum.parseResult(intent));
+                                list.addAll(paths);
                                 adapter.notifyDataChanged();
                                 Log.d("PhotoAlbum",list.toString());
                             }
                         });
+```

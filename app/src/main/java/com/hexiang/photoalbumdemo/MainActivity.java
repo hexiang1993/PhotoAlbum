@@ -46,19 +46,9 @@ public class MainActivity extends AppCompatActivity {
                         .addRemovePaths(list)
                         .setLimitCount(3)
                         .startAlbum()
-                        .subscribe(new Subscriber<List<String>>() {
+                        .subscribe(new Action1<List<String>>() {
                             @Override
-                            public void onCompleted() {
-
-                            }
-
-                            @Override
-                            public void onError(Throwable throwable) {
-                                throwable.printStackTrace();
-                            }
-
-                            @Override
-                            public void onNext(List<String> paths) {
+                            public void call(List<String> paths) {
                                 list.clear();
                                 list.addAll(paths);
                                 adapter.notifyDataChanged();
