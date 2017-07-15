@@ -1,7 +1,7 @@
 # PhotoAlbum
 系统相册
 
-##config the theme
+## config the theme
 ```
 ThemeData.init(new ThemeData.ThemeBuilder()
          .spanCount(3)
@@ -13,7 +13,7 @@ ThemeData.init(new ThemeData.ThemeBuilder()
          .build());
 ```
 
-##start album
+## start album
 ```
 new PhotoAlbum(MainActivity.this)
                         .addRemovePaths(list)
