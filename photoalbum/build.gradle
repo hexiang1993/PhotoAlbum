@@ -5,10 +5,10 @@ android {
     buildToolsVersion "25.0.2"
 
     defaultConfig {
-        minSdkVersion 16
+        minSdkVersion 14
         targetSdkVersion 25
-        versionCode 1060
-        versionName "1.0.6"
+        versionCode 1090
+        versionName "1.0.9"
     }
 
     lintOptions {
@@ -20,7 +20,7 @@ publish {
     userOrg = 'gengqiquan'//bintray.com用户名
     groupId = 'com.gengqiquan'//jcenter上的路径
     artifactId = 'photoalbum'//项目名称
-    publishVersion = '1.0.6'//版本号
+    publishVersion = '1.0.9'//版本号
     desc = '系统相册'//描述，不重要
     website = 'https://github.com/hexiang1993/PhotoAlbum'
 }
