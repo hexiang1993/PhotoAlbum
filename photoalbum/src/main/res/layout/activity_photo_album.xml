@@ -17,63 +17,59 @@
         android:layout_height="48dp"
         android:background="#ffffff" />
 
-    <RelativeLayout
+
+    <android.support.v7.widget.RecyclerView
+        android:id="@+id/recycle_view"
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        android:background="#e5e5e5"
+        android:overScrollMode="never" />
 
-        <android.support.v7.widget.RecyclerView
-            android:id="@+id/recycle_view"
-            android:layout_width="match_parent"
+    <RelativeLayout
+        android:id="@+id/rl_bottom"
+        android:layout_width="match_parent"
+        android:layout_height="45dp"
+        android:background="#fff">
+
+        <TextView
+            android:id="@+id/tv_preview"
+            android:layout_width="wrap_content"
             android:layout_height="match_parent"
-            android:layout_above="@+id/rl_bottom"
-            android:background="#e5e5e5" />
+            android:gravity="center_vertical"
+            android:includeFontPadding="false"
+            android:paddingLeft="15dp"
+            android:paddingRight="15dp"
+            android:text="预览"
+            android:textColor="#333"
+            android:textSize="14sp" />
 
-        <RelativeLayout
-            android:id="@+id/rl_bottom"
-            android:layout_width="match_parent"
-            android:layout_height="45dp"
-            android:layout_alignParentBottom="true"
-            android:background="#fff">
+        <TextView
+            android:id="@+id/tv_checked_count"
+            android:layout_width="20dp"
+            android:layout_height="20dp"
+            android:layout_centerVertical="true"
+            android:layout_toLeftOf="@+id/tv_checked_finish"
+            android:background="@drawable/checked_count_bg"
+            android:gravity="center"
+            android:includeFontPadding="false"
+            android:padding="3dp"
+            android:text="12"
+            android:textColor="#fff"
+            android:textSize="11sp" />
 
-            <TextView
-                android:id="@+id/tv_preview"
-                android:layout_width="wrap_content"
-                android:layout_height="match_parent"
-                android:gravity="center_vertical"
-                android:includeFontPadding="false"
-                android:paddingLeft="15dp"
-                android:paddingRight="15dp"
-                android:text="预览"
-                android:textColor="#333"
-                android:textSize="14sp" />
-
-            <TextView
-                android:id="@+id/tv_checked_count"
-                android:layout_width="20dp"
-                android:layout_height="20dp"
-                android:layout_centerVertical="true"
-                android:layout_toLeftOf="@+id/tv_checked_finish"
-                android:background="@drawable/checked_count_bg"
-                android:gravity="center"
-                android:includeFontPadding="false"
-                android:padding="3dp"
-                android:text="12"
-                android:textColor="#fff"
-                android:textSize="11sp" />
-
-            <TextView
-                android:id="@+id/tv_checked_finish"
-                android:layout_width="wrap_content"
-                android:layout_height="match_parent"
-                android:layout_alignParentRight="true"
-                android:gravity="center_vertical"
-                android:includeFontPadding="false"
-                android:paddingLeft="8dp"
-                android:paddingRight="15dp"
-                android:text="完成"
-                android:textColor="#009def"
-                android:textSize="14sp" />
-        </RelativeLayout>
+        <TextView
+            android:id="@+id/tv_checked_finish"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:layout_alignParentRight="true"
+            android:gravity="center_vertical"
+            android:includeFontPadding="false"
+            android:paddingLeft="8dp"
+            android:paddingRight="15dp"
+            android:text="完成"
+            android:textColor="#009def"
+            android:textSize="14sp" />
     </RelativeLayout>
 
 </LinearLayout>

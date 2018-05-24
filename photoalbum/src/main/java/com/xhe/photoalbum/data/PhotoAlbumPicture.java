@@ -8,7 +8,7 @@ import android.os.Parcelable;
  * 相册照片信息
  */
 
-public class PhotoAlbumPicture implements Parcelable , Comparable<PhotoAlbumPicture>{
+public class PhotoAlbumPicture implements Parcelable, Comparable<PhotoAlbumPicture> {
     private int id;
     /**
      * 图片路径。
@@ -40,6 +40,12 @@ public class PhotoAlbumPicture implements Parcelable , Comparable<PhotoAlbumPict
         else if (time < -Integer.MAX_VALUE)
             return -Integer.MAX_VALUE;
         return (int) time;
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        PhotoAlbumPicture p = (PhotoAlbumPicture) obj;
+        return path.equals(p.getPath());
     }
 
     @Override
@@ -135,4 +141,10 @@ public class PhotoAlbumPicture implements Parcelable , Comparable<PhotoAlbumPict
             return new PhotoAlbumPicture[size];
         }
     };
+
+
+    @Override
+    public int hashCode() {
+        return (isChecked ? 1 : 0);
+    }
 }

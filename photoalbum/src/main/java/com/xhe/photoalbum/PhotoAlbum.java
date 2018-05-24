@@ -2,21 +2,22 @@ package com.xhe.photoalbum;
 
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.Bitmap;
 import android.support.annotation.ColorInt;
 import android.support.annotation.DrawableRes;
 import android.support.annotation.NonNull;
 import android.text.TextUtils;
-import android.util.Log;
+import android.widget.ImageView;
 
-import com.gengqiquan.result.RxActivityResult;
+import com.bumptech.glide.Glide;
+import com.bumptech.glide.request.animation.GlideAnimation;
+import com.bumptech.glide.request.target.SimpleTarget;
 import com.xhe.photoalbum.data.ThemeData;
+import com.xhe.photoalbum.utils.ImageDisplayer;
 
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-
-import rx.Observable;
-import rx.functions.Func1;
 
 
 /**
@@ -54,10 +55,15 @@ public class PhotoAlbum {
     private ArrayList<String> listRemovePath = new ArrayList<>();
 
     /**
+     * 单选对时候是否展示选择框
+     */
+    private boolean singleChoiceShowBox = true;
+
+    /**
      * 最多能选择的图片数量
      * 默认为1
      */
-    private int limitCount = Integer.MAX_VALUE;
+    private int limitCount = 1;
 
     /**
      * toolbar的颜色
@@ -107,6 +113,17 @@ public class PhotoAlbum {
         this.context = context;
     }
 
+
+    /**
+     * 设置单选是否展示选择框
+     *
+     * @param singleChoiceShowBox
+     * @return
+     */
+    public PhotoAlbum setSingleChoiceShowBox(boolean singleChoiceShowBox) {
+        this.singleChoiceShowBox = singleChoiceShowBox;
+        return this;
+    }
 
     /**
      * 设置限制的最大选择数量
@@ -194,7 +211,7 @@ public class PhotoAlbum {
     /**
      * 最终调用的启动相册
      */
-    public Observable<List<String>> startAlbum() {
+    public Intent getAlbumIntent() {
         ThemeData.init(new ThemeData.ThemeBuilder()
                 .backgroundColor(backgroundColor)
                 .titleBarColor(toolbarColor)
@@ -202,6 +219,7 @@ public class PhotoAlbum {
                 .statusBarColor(statusBarColor)
                 .checkBoxDrawable(checkBoxDrawable)
                 .spanCount(spanCount)
+                .singleChoiceShowBox(singleChoiceShowBox)
                 .build());
 
         Intent intent = new Intent();
@@ -213,13 +231,6 @@ public class PhotoAlbum {
             throw new NullPointerException("context must be not null");
 
         intent.setClass(context, PhotoAlbumActivity.class);
-        return RxActivityResult.with(context)
-                .startActivityWithResult(intent)
-                .map(new Func1<Intent, List<String>>() {
-                    @Override
-                    public List<String> call(Intent intent) {
-                        return parseResult(intent);
-                    }
-                });
+        return intent;
     }
 }

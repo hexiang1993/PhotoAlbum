@@ -23,6 +23,7 @@ public class ThemeData {
         this.statusBarColor = builder.statusBarColor;
         this.checkBoxDrawable = builder.checkBoxDrawable;
         this.spanCount = builder.spanCount;
+        this.singleChoiceShowBox = builder.singleChoiceShowBox;
     }
 
 
@@ -33,6 +34,11 @@ public class ThemeData {
                     instance = themeData;
             }
     }
+
+    /**
+     * 单选对时候是否展示选择框
+     */
+    private static boolean singleChoiceShowBox = true;
 
     /**
      * 界面背景颜色
@@ -89,7 +95,16 @@ public class ThemeData {
         return statusBarColor;
     }
 
+    public static boolean isSingleChoiceShowBox() {
+        return singleChoiceShowBox;
+    }
+
     public static final class ThemeBuilder {
+        /**
+         * 单选对时候是否展示选择框
+         */
+        private boolean singleChoiceShowBox = true;
+
         private int backgroundColor = Color.WHITE;
 
         /**
@@ -147,6 +162,11 @@ public class ThemeData {
 
         public ThemeBuilder statusBarColor(@ColorInt int statusBarColor) {
             this.statusBarColor = statusBarColor;
+            return this;
+        }
+
+        public ThemeBuilder singleChoiceShowBox(boolean singleChoiceShowBox) {
+            this.singleChoiceShowBox = singleChoiceShowBox;
             return this;
         }
 

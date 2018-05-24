@@ -7,10 +7,11 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.bumptech.glide.Glide;
 import com.xhe.photoalbum.data.PhotoAlbumFolder;
 import com.xhe.photoalbum.data.PhotoAlbumPicture;
 import com.xhe.photoalbum.interfaces.OnAdapterViewItemClickLisenter;
-import com.xhe.photoalbum.utils.ImageLoader;
+import com.xhe.photoalbum.utils.ImageDisplayer;
 import com.xhe.photoalbum.utils.Util;
 
 import java.util.ArrayList;
@@ -39,14 +40,15 @@ public class FolderAdapter extends RecyclerView.Adapter<FolderAdapter.ViewHolder
         holder.tvName.setText(folder.getName());
         ArrayList<PhotoAlbumPicture> photos = folder.getPhotos();
         if (photos != null && photos.size() > 0) {
-            holder.tvCount.setText("("+photos.size()+")");
-            ImageLoader.getInstance(holder.ivHead.getContext()).load(Util.LOCAL_FILE_URI_PREFIX + photos.get(0).getPath(), holder.ivHead);
+            holder.tvCount.setText("(" + photos.size() + ")");
+            Glide.with(holder.ivHead.getContext())
+                    .load(Util.LOCAL_FILE_URI_PREFIX + photos.get(0).getPath()).into(holder.ivHead);
         }
         holder.itemView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 if (itemClickLisenter != null) {
-                    itemClickLisenter.itemClick(v,holder.getAdapterPosition());
+                    itemClickLisenter.itemClick(v, holder.getAdapterPosition());
                 }
             }
         });
